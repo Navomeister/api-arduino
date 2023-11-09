@@ -1,12 +1,8 @@
 <?php
-    echo("ola <br>");
+    phpinfo();
+    echo(" ola <br>");
     header("Access-Control-Allow-Origin: *");
-    $servername = 'doorsense-server.mysql.database.azure.com';
-    $username = 'breno';
-    $password = 'AcessoTech115';
-    $dbname = 'doorsense';
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    include_once("conexao.php");
 
     echo("passou dali <br>");
     if (isset($conn)) {
@@ -30,8 +26,6 @@
         'status' => 'error',
         'message' => 'Algo deu errado.'
     );
-    
-    // $senhas = ["senha1", "senha2"]; desnecessário
 
     // se não for para cadastrar o arduino
     if ($_GET['endpoint'] != "cadastro") {
