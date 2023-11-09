@@ -5,6 +5,6 @@
     $password = 'AcessoTech115';
     $dbname = 'doorsense';
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = mysqli_connect($servername, $username, $password, $dbname);
 
 ?>
