@@ -1,9 +1,10 @@
 <?php
-    echo("ola ola");
+    echo("ola <br>");
     header("Access-Control-Allow-Origin: *");
     include_once("conexao.php");
 
-    if (!$conn) {
+    echo("passou dali <br>");
+    if (isset($conn)) {
         echo("sem banco");
     }
     else {
