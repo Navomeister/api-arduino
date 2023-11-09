@@ -1,7 +1,7 @@
 <?php
     echo("ola ola");
     header("Access-Control-Allow-Origin: *");
-    include_once("./database/conexao.php");
+    include_once("conexao.php");
 
     if ($conn) {
         echo("banco");
