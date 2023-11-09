@@ -2,7 +2,9 @@
 ### 1.endpoint 
   - Recebe qual serviço deseja acessar;
   - Atualmente disponíveis: “salas”, "cadastro", "ativo";
-### 2.usuario - Recebe o nome de usuário (Unique ID) do requerente para autenticação; - Aceita somente os registrados no banco 
+### 2.usuario 
+  - Recebe o nome de usuário (Unique ID) do requerente para autenticação;
+  - Aceita somente os registrados no banco 
 
 # Respostas dos endpoints 
 ### 1. cadastro 
