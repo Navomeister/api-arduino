@@ -1,7 +1,11 @@
 <?php
     echo("ola ola");
     header("Access-Control-Allow-Origin: *");
-    include_once("database/conexao.php");
+    include_once("./database/conexao.php");
+
+    if ($conn) {
+        echo("banco");
+    }
 
     // nomes de usuário permitidos
     $usuarios = 'SELECT UNIQUE_ID FROM arduino WHERE STATUS_ARDUINO = "Ativo";';
