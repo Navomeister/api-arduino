@@ -3,9 +3,6 @@
     header("Access-Control-Allow-Origin: *");
     include_once("database/conexao.php");
 
-    if ($conn) {
-        echo("tem banco")
-    }
     // nomes de usuário permitidos
     $usuarios = 'SELECT UNIQUE_ID FROM arduino WHERE STATUS_ARDUINO = "Ativo";';
     $pegaUsuarios = $conn->query($usuarios);
