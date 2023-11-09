@@ -1,5 +1,5 @@
 <?php
-    echo("ola");
+    echo("ola ola");
     header("Access-Control-Allow-Origin: *");
     include_once("./database/conexao.php");
 
