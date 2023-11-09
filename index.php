@@ -3,7 +3,10 @@
     header("Access-Control-Allow-Origin: *");
     include_once("conexao.php");
 
-    if ($conn) {
+    if (!$conn) {
+        echo("sem banco");
+    }
+    else {
         echo("banco");
     }
 
