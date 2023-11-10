@@ -1,6 +1,6 @@
 <?php
     header("Access-Control-Allow-Origin: *");
-    include_once("conexao.php");
+    include_once("../database/conexao.php");
 
 
     // nomes de usuário permitidos
