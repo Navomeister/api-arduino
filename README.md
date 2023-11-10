@@ -18,5 +18,5 @@
   - Retorna sucesso e reseta o timer para desativá-lo (a fazer) 
 
 # Site da API para teste
-https://api-arduino.azurewebsites.net/?endpoint=ativo&usuario=00%2011%2022%2033%2044%2055%2066%2077%2088
+https://api-arduino.azurewebsites.net/?endpoint=ativo&usuario=00%2011%2022%2033%2044%2055%2066%2077%2088 <br>
 https://api-arduino.azurewebsites.net/?endpoint=salas&usuario=00%2011%2022%2033%2044%2055%2066%2077%2088
