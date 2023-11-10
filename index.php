@@ -21,7 +21,7 @@
     // se não for para cadastrar o arduino
     if ($_GET['endpoint'] != "cadastro") {
         // verificar as credencias recebidas
-        if (!in_array($_GET['usuario'], $usuariosPermitidos)) {
+        if (!in_array($_GET['usuario'], $usuariosPermitidos, true)) {
             // se as credenciais estiverem erradas, retorna erro
             header('HTTP/1.0 401 Unauthorized');
             echo ("Usuário não autorizado. \n ID: ". $_GET['usuario']);
@@ -81,40 +81,14 @@
                             $nomeSala = $resposta['NOME_SALA'] ." ". $resposta['NUMERO_SALA'];
                         }
 
-                        $urlPOST = 'https://eastus.tts.speech.microsoft.com/cognitiveservices/v1'; // link da api de TTS
-
-                        // curl
-                        $curl = curl_init();
-
-                        // cria o request POST
-                        curl_setopt_array($curl, [
-                        CURLOPT_URL => "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1", //url da API
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_ENCODING => "",
-                        CURLOPT_MAXREDIRS => 10,
-                        CURLOPT_TIMEOUT => 30,
-                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => "POST", // método de request
-                        CURLOPT_POSTFIELDS => "<speak version='1.0' xml:lang='pt-BR'><voice xml:lang='pt-BR' xml:gender='Female' name='pt-BR-FranciscaNeural'>\n ". $nomeSala ." \n</voice></speak>", // corpo do request
-                        CURLOPT_HTTPHEADER => [ // headers da chamada 
-                            "Ocp-Apim-Subscription-Key: d93c29515f6b4fb2a917afa4390d7454", // chave do serviço (menos seguro mas usaria de qualquer jeito pra pegar o token)
-                            "Content-Type: application/ssml+xml", // tipo do body
-                            "User-Agent: falamuitoeuespero", // nome do serviço
-                            "X-Microsoft-OutputFormat: audio-16khz-128kbitrate-mono-mp3" // extensão da resposta (wav)
-                        ],
-                        ]);
-
-                        // pega a resposta ou erro da chamada
-                        $responseTTS = curl_exec($curl);
-                        $err = curl_error($curl);
-                        curl_close($curl);
-
                         
-                        if ($responseTTS === "" || !$responseTTS) {
+                        $responseSalas = TTS($nomeSala);
+                        
+                        if (str_contains($responseSalas,'Erro: ')) {
                             // resposta da api com erro e informações, caso ocorra
                             $response = array(
                                 'status' => 'Erro Código: '. curl_getinfo($curl, CURLINFO_HTTP_CODE),
-                                'sala' => $err
+                                'sala' => $responseSalas
                             );
                         }
                         else{
@@ -123,7 +97,7 @@
                             $statusChgd = $conn->query($statusChg);
 
                             // devolve a resposta do TTS em String (converter no arduino)
-                            $response = $responseTTS;
+                            $response = $responseSalas;
                             header('Content-Description: File Transfer');
                             header('Content-Type: audio/mpeg');
                             header('Content-Transfer-Encoding: binary');
@@ -152,24 +126,37 @@
                 $result = $query->fetch_assoc();
 
                 // se houver, retorna erro
-                if ($result) {
-                    $response = array(
-                        'status' => 'error',
-                        'message' => 'Erro: Arduino já cadastrado'
-                    );
-                }
-                // caso contrário, cadastra o arduino como inativo, aguardando atribuição de sala
-                else {
+                if (!isset($result['UNIQUE_ID'])) {
                     $cad = 'INSERT INTO arduino(UNIQUE_ID, STATUS_ARDUINO, LAST_UPDATE) VALUES("'. $_GET['usuario'] .'", "Inativo", NOW());';
                     $result = $conn->query($cad);
 
                     $sql = 'SELECT * FROM arduino WHERE UNIQUE_ID =' . $_GET['usuario'];
                     $query = $conn->query($sql);
                     $result = $query->fetch_assoc();
-                    $response = array(
-                        'status' => 'success',
-                        'uniqueid' => $result['UNIQUE_ID']
-                    );
+                }
+
+                $msgCad = "Arduino ID ". $result['UNIQUE_ID'];
+
+                if (isset($msgCad)) {
+                    $responseCad = TTS($msgCad);
+
+                    
+                            
+                    if (str_contains($responseCad,'Erro: ')) {
+                        // resposta da api com erro e informações, caso ocorra
+                        $response = array(
+                            'status' => 'Erro Código: '. curl_getinfo($curl, CURLINFO_HTTP_CODE),
+                            'sala' => $responseCad
+                        );
+                    }
+                    else{
+                        // devolve a resposta do TTS em Áudio .mp3
+                        $response = $responseCad;
+                        header('Content-Description: File Transfer');
+                        header('Content-Type: audio/mpeg');
+                        header('Content-Transfer-Encoding: binary');
+                        
+                    }
                 }
             }
             // endpoint de atividade
@@ -184,12 +171,47 @@
             }
         }
 
-        if ($endpoint != 'salas') {
+        if (gettype($response) == "array") {
             // enviar respostas como json
             echo(json_encode($response));
         }
         else {
             echo $response;
+        }
+
+        function TTS(string $mensagem) {
+            // curl
+            $curl = curl_init();
+
+            // cria o request POST
+            curl_setopt_array($curl, [
+            CURLOPT_URL => "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1", //url da API
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST", // método de request
+            CURLOPT_POSTFIELDS => "<speak version='1.0' xml:lang='pt-BR'><voice xml:lang='pt-BR' xml:gender='Female' name='pt-BR-FranciscaNeural'>\n ". $mensagem ." \n</voice></speak>", // corpo do request
+            CURLOPT_HTTPHEADER => [ // headers da chamada 
+                "Ocp-Apim-Subscription-Key: d93c29515f6b4fb2a917afa4390d7454", // chave do serviço (menos seguro mas usaria de qualquer jeito pra pegar o token)
+                "Content-Type: application/ssml+xml", // tipo do body
+                "User-Agent: falamuitoeuespero", // nome do serviço
+                "X-Microsoft-OutputFormat: audio-16khz-128kbitrate-mono-mp3" // extensão da resposta (wav)
+            ],
+            ]);
+
+            // pega a resposta ou erro da chamada
+            $responseTTS = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            if ($responseTTS === "" || !$responseTTS) {
+                return("Erro: " . $err);
+            }
+            else {
+                return($responseTTS);
+            }
         }
 
 ?>
