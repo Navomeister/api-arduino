@@ -51,7 +51,7 @@
         if ($method == 'GET') {
             if ($endpoint == 'salas') {
                 // muda o status para inativo para caso haja erro
-                $statusChg = 'UPDATE arduino SET STATUS_ARDUINO = "Inativo" WHERE UNIQUE_ID = ' . $_GET["usuario"];
+                $statusChg = 'UPDATE arduino SET STATUS_ARDUINO = "Inativo" WHERE UNIQUE_ID = "' . $_GET["usuario"] . '"';
                 $statusChgd = $conn->query($statusChg);
                 
                 // verificação de conexão com o banco
