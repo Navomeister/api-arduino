@@ -98,7 +98,7 @@
                             "Ocp-Apim-Subscription-Key: d93c29515f6b4fb2a917afa4390d7454", // chave do serviço (menos seguro mas usaria de qualquer jeito pra pegar o token)
                             "Content-Type: application/ssml+xml", // tipo do body
                             "User-Agent: falamuitoeuespero", // nome do serviço
-                            "X-Microsoft-OutputFormat: riff-24khz-16bit-mono-pcm" // extensão da resposta (wav)
+                            "X-Microsoft-OutputFormat: audio-16khz-128kbitrate-mono-mp3" // extensão da resposta (wav)
                         ],
                         ]);
 
@@ -123,7 +123,7 @@
                             // devolve a resposta do TTS em String (converter no arduino)
                             $response = $responseTTS;
                             header('Content-Description: File Transfer');
-                            header('Content-Type: audio/x-wav');
+                            header('Content-Type: audio/mpeg');
                             // header('Content-Disposition: attachment; filename=testfile.wav');
                             header('Content-Transfer-Encoding: binary');
                             // header('transfer-encoding: chunked');
