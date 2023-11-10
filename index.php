@@ -1,7 +1,4 @@
 <?php
-    // phpinfo();
-    $envvar = getenv('APPSETTING_PATH_CERT');
-    echo($envvar);
     header("Access-Control-Allow-Origin: *");
     include_once("conexao.php");
 
@@ -100,7 +97,6 @@
                         CURLOPT_CUSTOMREQUEST => "POST", // método de request
                         CURLOPT_POSTFIELDS => "<speak version='1.0' xml:lang='pt-BR'><voice xml:lang='pt-BR' xml:gender='Female' name='pt-BR-FranciscaNeural'>\n ". $nomeSala ." \n</voice></speak>", // corpo do request
                         CURLOPT_HTTPHEADER => [ // headers da chamada 
-                            // Muda depois de um tempo (precisaria de outra chamada de api) // "Authorization: Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleTEiLCJ0eXAiOiJKV1QifQ.eyJyZWdpb24iOiJlYXN0dXMiLCJzdWJzY3JpcHRpb24taWQiOiI5MTFkOTMyOWY3Mjg0NjVmYjEzMzQwYjU1ZGJlZTZkYSIsInByb2R1Y3QtaWQiOiJTcGVlY2hTZXJ2aWNlcy5GMCIsImNvZ25pdGl2ZS1zZXJ2aWNlcy1lbmRwb2ludCI6Imh0dHBzOi8vYXBpLmNvZ25pdGl2ZS5taWNyb3NvZnQuY29tL2ludGVybmFsL3YxLjAvIiwiYXp1cmUtcmVzb3VyY2UtaWQiOiIvc3Vic2NyaXB0aW9ucy8wNDU0MGNlYy0zMzRhLTQzMjctYWQyOC0zYzNhM2ExOWZlNTcvcmVzb3VyY2VHcm91cHMvZmFsYW50ZXMvcHJvdmlkZXJzL01pY3Jvc29mdC5Db2duaXRpdmVTZXJ2aWNlcy9hY2NvdW50cy9mYWxhbXVpdG9ldWVzcGVybyIsInNjb3BlIjoic3BlZWNoc2VydmljZXMiLCJhdWQiOiJ1cm46bXMuc3BlZWNoc2VydmljZXMuZWFzdHVzIiwiZXhwIjoxNjk1MzE1MjExLCJpc3MiOiJ1cm46bXMuY29nbml0aXZlc2VydmljZXMifQ.3VBKmXGcPrlyjBpk_kYwy5zPSL_vbmPPUuZ1Y9XEhTNTUBLS0olOmvyxPQ49o-T9wzobEcBULxdKe7ae3H_ZnA",
                             "Ocp-Apim-Subscription-Key: d93c29515f6b4fb2a917afa4390d7454", // chave do serviço (menos seguro mas usaria de qualquer jeito pra pegar o token)
                             "Content-Type: application/ssml+xml", // tipo do body
                             "User-Agent: falamuitoeuespero", // nome do serviço
@@ -130,10 +126,8 @@
                             $response = $responseTTS;
                             header('Content-Description: File Transfer');
                             header('Content-Type: audio/mpeg');
-                            // header('Content-Disposition: attachment; filename=testfile.wav');
                             header('Content-Transfer-Encoding: binary');
-                            // header('transfer-encoding: chunked');
-                            // $teste = file_put_contents("audio/".uniqid().".wav", $responseTTS); // salva o arquivo na pasta audio (apenas para teste)
+                            
                         }
 
                     } 
