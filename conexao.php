@@ -8,7 +8,7 @@
     // $conn = new mysqli($servername, $username, $password, $dbname);
 
     $conn = mysqli_init();
-    mysqli_ssl_set($conn, NULL, NULL, "/etc/ca-certificates/DigiCertGlobalRootCA.crt.pem", NULL, NULL);
+    mysqli_ssl_set($conn, NULL, NULL, "/home/site/wwwroot/DigiCertGlobalRootCA.crt.pem", NULL, NULL);
     mysqli_real_connect($conn, $servername, $username, $password, $dbname, 3306); 
 
 ?>
