@@ -73,10 +73,14 @@
                     // verifica se o query retornou algo
                     if ($result) {
                         // consulta ambas as tabelas juntas
+                        $nomeSala = "Arduino não está atrelado à uma sala"
+
                         $sql = 'SELECT * FROM sala INNER JOIN arduino ON FK_ARDUINO = ID_ARDUINO WHERE arduino.UNIQUE_ID = "'. $_GET['usuario'] .'";';
                         $result = $conn->query($sql);
                         $resposta = $result->fetch_assoc();
-                        $nomeSala = $resposta['NOME_SALA'] ." ". $resposta['NUMERO_SALA'];
+                        if (isset($resposta['NOME_SALA']) && isset($resposta['NUMERO_SALA'])) {
+                            $nomeSala = $resposta['NOME_SALA'] ." ". $resposta['NUMERO_SALA'];
+                        }
 
                         $urlPOST = 'https://eastus.tts.speech.microsoft.com/cognitiveservices/v1'; // link da api de TTS
 
