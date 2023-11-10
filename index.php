@@ -117,7 +117,7 @@
                         }
                         else{
                             // muda o status para ativo já que houve retorno da API
-                            $statusChg = 'UPDATE arduino SET STATUS_ARDUINO = "Ativo" WHERE UNIQUE_ID = ' . $_GET["usuario"];
+                            $statusChg = 'UPDATE arduino SET STATUS_ARDUINO = "Ativo" WHERE UNIQUE_ID = "' . $_GET["usuario"] . '"';
                             $statusChgd = $conn->query($statusChg);
 
                             // devolve a resposta do TTS em String (converter no arduino)
