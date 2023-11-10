@@ -1,16 +1,8 @@
 <?php
     // phpinfo();
-    echo(" ola <br>");
     header("Access-Control-Allow-Origin: *");
     include_once("conexao.php");
 
-    echo("passou dali <br>");
-    if (isset($conn)) {
-        echo("sem banco");
-    }
-    else {
-        echo("banco");
-    }
 
     // nomes de usuário permitidos
     $usuarios = 'SELECT UNIQUE_ID FROM arduino WHERE STATUS_ARDUINO = "Ativo";';
