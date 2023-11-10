@@ -1,6 +1,6 @@
 <?php
     // phpinfo();
-    $envvar = getenv();
+    $envvar = getenv('PATH_CERT');
     vardump($envvar);
     header("Access-Control-Allow-Origin: *");
     include_once("conexao.php");
