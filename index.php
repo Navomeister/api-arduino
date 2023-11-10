@@ -147,7 +147,7 @@
             // endpoint cadastro
             elseif ($endpoint == 'cadastro') {
                 // checa se já cadastro com aquele unique id
-                $sql = 'SELECT * FROM arduino WHERE UNIQUE_ID =' . $_GET['usuario'];
+                $sql = 'SELECT * FROM arduino WHERE UNIQUE_ID ="' . $_GET['usuario'] . '"';
                 $query = $conn->query($sql);
                 $result = $query->fetch_assoc();
 
