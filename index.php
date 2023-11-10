@@ -73,7 +73,7 @@
                     // verifica se o query retornou algo
                     if ($result) {
                         // consulta ambas as tabelas juntas
-                        $nomeSala = "Arduino não está atrelado à uma sala"
+                        $nomeSala = "Arduino não está atrelado à uma sala";
 
                         $sql = 'SELECT * FROM sala INNER JOIN arduino ON FK_ARDUINO = ID_ARDUINO WHERE arduino.UNIQUE_ID = "'. $_GET['usuario'] .'";';
                         $result = $conn->query($sql);
