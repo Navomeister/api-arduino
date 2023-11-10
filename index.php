@@ -1,5 +1,7 @@
 <?php
     // phpinfo();
+    $envvar = getenv();
+    echo($envvar);
     header("Access-Control-Allow-Origin: *");
     include_once("conexao.php");
 
