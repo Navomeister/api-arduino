@@ -1,7 +1,7 @@
 <?php
     // phpinfo();
     $envvar = getenv('APPSETTING_PATH_CERT');
-    vardump($envvar);
+    echo($envvar);
     header("Access-Control-Allow-Origin: *");
     include_once("conexao.php");
 
