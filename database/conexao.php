@@ -1,9 +1,9 @@
 <?php
     
-    $servername = 'doorsense-server.mysql.database.azure.com';
-    $username = 'breno';
-    $password = 'AcessoTech115';
-    $dbname = 'doorsense';
+    $servername = getenv('APPSETTING_BCD_SERVER');
+    $username = getenv('APPSETTING_BCD_USER');
+    $password = getenv('APPSETTING_BCD_PASS');
+    $dbname = getenv('APPSETTING_BCD_NAME');
     $cert = getenv('APPSETTING_PATH_CERT');
 
     // $conn = new mysqli($servername, $username, $password, $dbname);
