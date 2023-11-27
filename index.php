@@ -129,7 +129,7 @@
                     $msgCad = "Arduino ID ". $result['UNIQUE_ID'];
                 }
                 else {
-                    $msgCad = "Arduino já cadastrado"
+                    $msgCad = "Arduino já cadastrado";
                 }
 
                 $responseCad = TTS($msgCad);
