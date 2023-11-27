@@ -60,23 +60,15 @@
                         'message' => 'Erro:' . $conn->connect_error
                     );
                 } else {
-                    // consulta o banco para pegar o ID do arduino
-                    $query = 'SELECT * FROM arduino WHERE UNIQUE_ID = "'. $_GET["usuario"] .'";';
-                    $idArduino = $conn->query($query);
-                    $pegaId = $idArduino->fetch_assoc();
-
-                    // pega as informações da sala em que o arduino está atribuído
-                    $sql = 'SELECT * FROM sala WHERE FK_ARDUINO = '. $pegaId['ID_ARDUINO'];
+                    // consulta ambas as tabelas juntas
+                    $sql = 'SELECT * FROM sala INNER JOIN arduino ON FK_ARDUINO = ID_ARDUINO WHERE arduino.UNIQUE_ID = "'. $_GET['usuario'] .'";';
                     $result = $conn->query($sql);
+                    $resposta = $result->fetch_assoc();
     
                     // verifica se o query retornou algo
-                    if ($result) {
-                        // consulta ambas as tabelas juntas
+                    if (isset($resposta['ID_ARDUINO'])) {
                         $nomeSala = "Arduino não está atrelado à uma sala";
 
-                        $sql = 'SELECT * FROM sala INNER JOIN arduino ON FK_ARDUINO = ID_ARDUINO WHERE arduino.UNIQUE_ID = "'. $_GET['usuario'] .'";';
-                        $result = $conn->query($sql);
-                        $resposta = $result->fetch_assoc();
                         if (isset($resposta['NOME_SALA']) && isset($resposta['NUMERO_SALA'])) {
                             $nomeSala = $resposta['NOME_SALA'] ." ". $resposta['NUMERO_SALA'];
                         }
@@ -133,30 +125,29 @@
                     $sql = 'SELECT * FROM arduino WHERE UNIQUE_ID =' . $_GET['usuario'];
                     $query = $conn->query($sql);
                     $result = $query->fetch_assoc();
+
+                    $msgCad = "Arduino ID ". $result['UNIQUE_ID'];
+                }
+                else {
+                    $msgCad = "Arduino já cadastrado"
                 }
 
-                $msgCad = "Arduino ID ". $result['UNIQUE_ID'];
-
-                if (isset($msgCad)) {
-                    $responseCad = TTS($msgCad);
-
-                    
-                            
-                    if (str_contains($responseCad,'Erro: ')) {
-                        // resposta da api com erro e informações, caso ocorra
-                        $response = array(
-                            'status' => 'Erro Código: '. curl_getinfo($curl, CURLINFO_HTTP_CODE),
-                            'sala' => $responseCad
-                        );
-                    }
-                    else{
-                        // devolve a resposta do TTS em Áudio .mp3
-                        $response = $responseCad;
-                        header('Content-Description: File Transfer');
-                        header('Content-Type: audio/mpeg');
-                        header('Content-Transfer-Encoding: binary');
+                $responseCad = TTS($msgCad);
                         
-                    }
+                if (str_contains($responseCad,'Erro: ')) {
+                    // resposta da api com erro e informações, caso ocorra
+                    $response = array(
+                        'status' => 'Erro Código: '. curl_getinfo($curl, CURLINFO_HTTP_CODE),
+                        'sala' => $responseCad
+                    );
+                }
+                else{
+                    // devolve a resposta do TTS em Áudio .mp3
+                    $response = $responseCad;
+                    header('Content-Description: File Transfer');
+                    header('Content-Type: audio/mpeg');
+                    header('Content-Transfer-Encoding: binary');
+                    
                 }
             }
             // endpoint de atividade
