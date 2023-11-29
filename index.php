@@ -157,10 +157,11 @@
                 $resultStatus = $conn->query($queryStatus);
                 $respStatus = $resultStatus->fetch_assoc();
 
-                if ($respStatus['STATUS_ARDUINO'] != "Inativo") {
-                    $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
-                    $result = $conn->query($sql);
-                }
+                $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE ID_ARDUINO = '". $respStatus['ID_ARDUINO'] ."';";
+                $result = $conn->query($sql);
+
+                $response = $respStatus['STATUS_ARDUINO'];
+                
             }
         }
 
