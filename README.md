@@ -10,13 +10,13 @@
 ### 1. cadastro 
   - Caso o arduino não esteja cadastrado, o cadastra como inativo
   - Caso o arduino já esteja cadastrado,  não o cadastra
-  - Em ambos os casos, retorna um áudio informando o ID do requerente
+  - Em ambos os casos, retorna um áudio (MP3) informando o ID do requerente
 ### 2. salas 
   - Faz uma chamada para a API de TTS
   - Retorna a resposta (áudio em  MP3) para o requerente 
 ### 3. ativo 
-  - Atualiza o status do arduino no banco, confirmando sua atividade
-  - Retorna sucesso e reseta o timer para desativá-lo (a fazer) 
+  - Confere o status do arduino no banco e atualiza o campo LAST_UPDATE no banco 
+  - Retorna o status em string
 
 # Site da API para teste
 https://api-arduino.azurewebsites.net/?endpoint=ativo&usuario=00%2011%2022%2033%2044%2055%2066%2077%2088 <br>
