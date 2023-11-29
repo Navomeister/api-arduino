@@ -167,6 +167,7 @@
 
         if (gettype($response) == "array") {
             // enviar respostas como json
+            echo("Teste");
             echo(json_encode($response));
         }
         else {
