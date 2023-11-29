@@ -19,7 +19,7 @@
     );
 
     // se não for para cadastrar o arduino
-    if ($_GET['endpoint'] != "cadastro") {
+    if ($_GET['endpoint'] != "cadastro" && $_GET['endpoint'] != "ativo") {
         // verificar as credencias recebidas
         if (!in_array($_GET['usuario'], $usuariosPermitidos, true)) {
             // se as credenciais estiverem erradas, retorna erro
@@ -119,7 +119,7 @@
 
                 // se houver, retorna erro
                 if (!isset($result['UNIQUE_ID'])) {
-                    $cad = 'INSERT INTO arduino(UNIQUE_ID, STATUS_ARDUINO, LAST_UPDATE) VALUES("'. $_GET['usuario'] .'", "Inativo", NOW());';
+                    $cad = 'INSERT INTO arduino(UNIQUE_ID, STATUS_ARDUINO, LAST_UPDATE) VALUES("'. $_GET['usuario'] .'", "Pendente", NOW());';
                     $result = $conn->query($cad);
 
                     $sql = 'SELECT * FROM arduino WHERE UNIQUE_ID =' . $_GET['usuario'];
@@ -153,12 +153,14 @@
             // endpoint de atividade
             elseif ($endpoint == 'ativo') {
                 // atualiza o estado do arduino para ativo, confirmando sua atividade
-                $sql = "UPDATE arduino SET STATUS_ARDUINO = 'Ativo', LAST_UPDATE = NOW() WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
-                $result = $conn->query($sql);
-                $response = array(
-                    'status' => 'success',
-                    'status_arduino' => 'Ativo'
-                );
+                $queryStatus = "SELECT * FROM arduino WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
+                $resultStatus = $conn->query($queryStatus);
+                $respStatus = $resultStatus->fetch_assoc();
+
+                if ($respStatus['STATUS_ARDUINO'] != "Inativo") {
+                    $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
+                    $result = $conn->query($sql);
+                }
             }
         }
 
