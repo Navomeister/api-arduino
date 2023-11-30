@@ -2,6 +2,15 @@
     header("Access-Control-Allow-Origin: *");
     include_once("database/conexao.php");
 
+    // verificação de conexão com o banco
+    if ($conn->connect_error) {
+        $response = array(
+            'status' => 'error',
+            'message' => 'Erro:' . $conn->connect_error
+        );
+        echo($response);
+        exit;
+    }
 
     // nomes de usuário permitidos
     $usuarios = 'SELECT UNIQUE_ID FROM arduino WHERE STATUS_ARDUINO = "Ativo";';
@@ -48,67 +57,47 @@
             'message' => 'Resposta Padrão'
         );
         if ($method == 'GET') {
-            if ($endpoint == 'salas') {
-                // muda o status para inativo para caso haja erro
-                $statusChg = 'UPDATE arduino SET STATUS_ARDUINO = "Inativo" WHERE UNIQUE_ID = "' . $_GET["usuario"] . '"';
-                $statusChgd = $conn->query($statusChg);
-                
-                // verificação de conexão com o banco
-                if ($conn->connect_error) {
-                    $response = array(
-                        'status' => 'error',
-                        'message' => 'Erro:' . $conn->connect_error
-                    );
-                } else {
-                    // consulta ambas as tabelas juntas
-                    $sql = 'SELECT * FROM sala INNER JOIN arduino ON FK_ARDUINO = ID_ARDUINO WHERE arduino.UNIQUE_ID = "'. $_GET['usuario'] .'";';
-                    $result = $conn->query($sql);
-                    $resposta = $result->fetch_assoc();
-    
-                    // verifica se o query retornou algo
-                    if (isset($resposta['ID_ARDUINO'])) {
-                        $nomeSala = "Arduino não está atrelado à uma sala";
+            if ($endpoint == 'salas') {                
+                // consulta ambas as tabelas juntas
+                $sql = 'SELECT * FROM sala INNER JOIN arduino ON FK_ARDUINO = ID_ARDUINO WHERE arduino.UNIQUE_ID = "'. $_GET['usuario'] .'";';
+                $result = $conn->query($sql);
+                $resposta = $result->fetch_assoc();
 
-                        if (isset($resposta['NOME_SALA']) && isset($resposta['NUMERO_SALA'])) {
-                            $nomeSala = $resposta['NOME_SALA'] ." ". $resposta['NUMERO_SALA'];
-                        }
+                // verifica se o query retornou algo
+                if (isset($resposta['ID_ARDUINO'])) {
+                    $nomeSala = "Arduino não está atrelado à uma sala";
 
-                        
-                        $responseSalas = TTS($nomeSala);
-                        
-                        if (str_contains($responseSalas,'Erro: ')) {
-                            // resposta da api com erro e informações, caso ocorra
-                            $response = array(
-                                'status' => 'Erro Código: '. curl_getinfo($curl, CURLINFO_HTTP_CODE),
-                                'sala' => $responseSalas
-                            );
-                        }
-                        else{
-                            // muda o status para ativo já que houve retorno da API
-                            $statusChg = 'UPDATE arduino SET STATUS_ARDUINO = "Ativo" WHERE UNIQUE_ID = "' . $_GET["usuario"] . '"';
-                            $statusChgd = $conn->query($statusChg);
+                    if (isset($resposta['NOME_SALA']) && isset($resposta['NUMERO_SALA'])) {
+                        $nomeSala = $resposta['NOME_SALA'] ." ". $resposta['NUMERO_SALA'];
+                    }
 
-                            // devolve a resposta do TTS em String (converter no arduino)
-                            $response = $responseSalas;
-                            header('Content-Description: File Transfer');
-                            header('Content-Type: audio/mpeg');
-                            header('Content-Transfer-Encoding: binary');
-                            
-                        }
-
-                    } 
+                    // pega o áudio com o nome e número da sala
+                    $responseSalas = TTS($nomeSala);
                     
-                    else {
-                        // resposta para caso não haja retorno
+                    if (str_contains($responseSalas,'Erro: ')) {
+                        // resposta da api com erro e informações, caso ocorra
                         $response = array(
-                            'status' => 'error',
-                            'message' => 'Erro 404: Sala Não Encontrada.'
+                            'status' => 'Erro Código: '. curl_getinfo($curl, CURLINFO_HTTP_CODE),
+                            'sala' => $responseSalas
                         );
                     }
-    
-                    // fecha conexão com o banco
-                    $conn->close();
+                    else{
+                        // devolve a resposta do TTS em String (converter no arduino)
+                        $response = $responseSalas;
+                    }
+                } 
+                
+                else {
+                    // resposta para caso não haja retorno
+                    $response = array(
+                        'status' => 'error',
+                        'message' => 'Erro 404: Sala Não Encontrada.'
+                    );
                 }
+
+                // fecha conexão com o banco
+                $conn->close();
+            
             }
             // endpoint cadastro
             elseif ($endpoint == 'cadastro') {
@@ -117,7 +106,8 @@
                 $query = $conn->query($sql);
                 $result = $query->fetch_assoc();
 
-                // se houver, retorna erro
+                // se houver, retorna que já foi cadastrado
+                // em ambos os casos retorna o ID do arduino
                 if (!isset($result['UNIQUE_ID'])) {
                     $cad = 'INSERT INTO arduino(UNIQUE_ID, STATUS_ARDUINO, LAST_UPDATE) VALUES("'. $_GET['usuario'] .'", "Pendente", NOW());';
                     $result = $conn->query($cad);
@@ -129,9 +119,10 @@
                     $msgCad = "Arduino ID ". $result['UNIQUE_ID'];
                 }
                 else {
-                    $msgCad = "Arduino já cadastrado";
+                    $msgCad = "Arduino já cadastrado. ID ". $result['UNIQUE_ID'];
                 }
 
+                // pega o áudio com o ID do arduino
                 $responseCad = TTS($msgCad);
                         
                 if (str_contains($responseCad,'Erro: ')) {
@@ -143,16 +134,13 @@
                 }
                 else{
                     // devolve a resposta do TTS em Áudio .mp3
-                    $response = $responseCad;
-                    header('Content-Description: File Transfer');
-                    header('Content-Type: audio/mpeg');
-                    header('Content-Transfer-Encoding: binary');
-                    
+                    $response = $responseCad;                    
                 }
             }
             // endpoint de atividade
             elseif ($endpoint == 'ativo') {
-                // atualiza o estado do arduino para ativo, confirmando sua atividade
+                header('Content-Type: text/html; charset=UTF-8');
+                // atualiza o último update do arduino, confirmando sua atividade
                 $queryStatus = "SELECT * FROM arduino WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
                 $resultStatus = $conn->query($queryStatus);
                 $respStatus = $resultStatus->fetch_assoc();
@@ -160,6 +148,7 @@
                 $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE ID_ARDUINO = '". $respStatus['ID_ARDUINO'] ."';";
                 $result = $conn->query($sql);
 
+                // responde com string, mandando o status do arduino
                 $response = $respStatus['STATUS_ARDUINO'];
                 
             }
@@ -174,6 +163,14 @@
         }
 
         function TTS(string $mensagem) {
+            // chave da api de texto para áudio
+            $TTSKEY = getenv('APPSETTING_TTS_KEY');
+
+            // headers para o áudio
+            header('Content-Description: File Transfer');
+            header('Content-Type: audio/mpeg');
+            header('Content-Transfer-Encoding: binary');
+
             // curl
             $curl = curl_init();
 
@@ -188,7 +185,7 @@
             CURLOPT_CUSTOMREQUEST => "POST", // método de request
             CURLOPT_POSTFIELDS => "<speak version='1.0' xml:lang='pt-BR'><voice xml:lang='pt-BR' xml:gender='Female' name='pt-BR-FranciscaNeural'>\n ". $mensagem ." \n</voice></speak>", // corpo do request
             CURLOPT_HTTPHEADER => [ // headers da chamada 
-                "Ocp-Apim-Subscription-Key: d93c29515f6b4fb2a917afa4390d7454", // chave do serviço (menos seguro mas usaria de qualquer jeito pra pegar o token)
+                "Ocp-Apim-Subscription-Key: ". $TTSKEY, // chave do serviço (menos seguro mas usaria de qualquer jeito pra pegar o token)
                 "Content-Type: application/ssml+xml", // tipo do body
                 "User-Agent: falamuitoeuespero", // nome do serviço
                 "X-Microsoft-OutputFormat: audio-16khz-128kbitrate-mono-mp3" // extensão da resposta (wav)
