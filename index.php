@@ -22,11 +22,6 @@
         $i++;
     }
 
-    $response = array(
-        'status' => 'error',
-        'message' => 'Algo deu errado.'
-    );
-
     // se não for para cadastrar o arduino
     if ($_GET['endpoint'] != "cadastro" && $_GET['endpoint'] != "ativo") {
         // verificar as credencias recebidas
@@ -47,15 +42,7 @@
     
         // verifica o endpoint solicitado
         $endpoint = $_GET['endpoint'];
-    
-        // verificar os parâmetros de requisição
-        $params = $_GET;
-    
-        // define uma resposta padrão
-        $response = array(
-            'status' => 'error',
-            'message' => 'Resposta Padrão'
-        );
+        
         if ($method == 'GET') {
             if ($endpoint == 'salas') {                
                 // consulta ambas as tabelas juntas
@@ -65,11 +52,7 @@
 
                 // verifica se o query retornou algo
                 if (isset($resposta['ID_ARDUINO'])) {
-                    $nomeSala = "Arduino não está atrelado à uma sala";
-
-                    if (isset($resposta['NOME_SALA']) && isset($resposta['NUMERO_SALA'])) {
-                        $nomeSala = $resposta['NOME_SALA'] ." ". $resposta['NUMERO_SALA'];
-                    }
+                    $nomeSala = $resposta['NOME_SALA'] ." ". $resposta['NUMERO_SALA'];
 
                     // pega o áudio com o nome e número da sala
                     $responseSalas = TTS($nomeSala);
@@ -78,7 +61,7 @@
                         // resposta da api com erro e informações, caso ocorra
                         $response = array(
                             'status' => 'Erro Código: '. curl_getinfo($curl, CURLINFO_HTTP_CODE),
-                            'sala' => $responseSalas
+                            'erro' => $responseSalas
                         );
                     }
                     else{
@@ -108,19 +91,12 @@
 
                 // se houver, retorna que já foi cadastrado
                 // em ambos os casos retorna o ID do arduino
-                if (!isset($result['UNIQUE_ID'])) {
+                if (!isset($result['UNIQUE_ID']) || $result['UNIQUE_ID'] == '') {
                     $cad = 'INSERT INTO arduino(UNIQUE_ID, STATUS_ARDUINO, LAST_UPDATE) VALUES("'. $_GET['usuario'] .'", "Pendente", NOW());';
-                    $result = $conn->query($cad);
-
-                    $sql = 'SELECT * FROM arduino WHERE UNIQUE_ID =' . $_GET['usuario'];
-                    $query = $conn->query($sql);
-                    $result = $query->fetch_assoc();
-
-                    $msgCad = "Arduino ID ". $result['UNIQUE_ID'];
+                    $resultCad = $conn->query($cad);
                 }
-                else {
-                    $msgCad = "Arduino já cadastrado. ID ". $result['UNIQUE_ID'];
-                }
+                
+                $msgCad = "Arduino ID ". $_GET['usuario'];
 
                 // pega o áudio com o ID do arduino
                 $responseCad = TTS($msgCad);
@@ -129,7 +105,7 @@
                     // resposta da api com erro e informações, caso ocorra
                     $response = array(
                         'status' => 'Erro Código: '. curl_getinfo($curl, CURLINFO_HTTP_CODE),
-                        'sala' => $responseCad
+                        'erro' => $responseCad
                     );
                 }
                 else{
