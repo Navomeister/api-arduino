@@ -15,7 +15,7 @@
     // nomes de usuário permitidos
     $usuarios = 'SELECT * FROM arduino WHERE UNIQUE_ID = "'. $_GET['usuario'] .'";';
     $pegaUsuarios = $conn->query($usuarios);
-    $usuarioPermitido = $pegaUsuarios->fetch_assoc()
+    $usuarioPermitido = $pegaUsuarios->fetch_assoc();
 
     // se não for para cadastrar o arduino
     if ($_GET['endpoint'] != "cadastro" && $_GET['endpoint'] != "ativo") {
