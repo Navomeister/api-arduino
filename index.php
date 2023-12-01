@@ -13,19 +13,14 @@
     }
 
     // nomes de usuário permitidos
-    $usuarios = 'SELECT UNIQUE_ID FROM arduino WHERE STATUS_ARDUINO = "Ativo";';
+    $usuarios = 'SELECT * FROM arduino WHERE UNIQUE_ID = "'. $_GET['usuario'] .'";';
     $pegaUsuarios = $conn->query($usuarios);
-    $usuariosPermitidos = array();
-    $i = 0;
-    while ($row = $pegaUsuarios->fetch_assoc()) {
-        $usuariosPermitidos[$i] = $row['UNIQUE_ID'];
-        $i++;
-    }
+    $usuarioPermitido = $pegaUsuarios->fetch_assoc()
 
     // se não for para cadastrar o arduino
     if ($_GET['endpoint'] != "cadastro" && $_GET['endpoint'] != "ativo") {
         // verificar as credencias recebidas
-        if (!in_array($_GET['usuario'], $usuariosPermitidos, true)) {
+        if ($usuarioPermitido['STATUS_ARDUINO'] != "Ativo" || !isset($usuarioPermitido['STATUS_ARDUINO'])) {
             // se as credenciais estiverem erradas, retorna erro
             header('HTTP/1.0 401 Unauthorized');
             echo ("Usuário não autorizado. \n ID: ". $_GET['usuario']);
