@@ -139,8 +139,9 @@
 
             // headers para o áudio
             header('Content-Description: File Transfer');
-            header('Content-Type: audio/x-wav');
+            header('Content-Type: audio/mpeg');
             // audio/mpeg
+            // audio/x-wav
             header('Content-Transfer-Encoding: binary');
 
             // curl
@@ -160,10 +161,11 @@
                 "Ocp-Apim-Subscription-Key: ". $TTSKEY, // chave do serviço (menos seguro mas usaria de qualquer jeito pra pegar o token)
                 "Content-Type: application/ssml+xml", // tipo do body
                 "User-Agent: falamuitoeuespero", // nome do serviço
-                "X-Microsoft-OutputFormat: riff-24khz-16bit-mono-pcm" // extensão da resposta (wav)
+                "X-Microsoft-OutputFormat: audio-16khz-128kbitrate-mono-mp3" // extensão da resposta (wav)
             ],
             ]);
             // audio-16khz-128kbitrate-mono-mp3
+            // riff-24khz-16bit-mono-pcm
 
             // pega a resposta ou erro da chamada
             $responseTTS = curl_exec($curl);
