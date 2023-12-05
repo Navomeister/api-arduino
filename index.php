@@ -113,7 +113,7 @@
             elseif ($endpoint == 'ativo') {
                 header('Content-Type: text/html; charset=UTF-8');
                 // atualiza o último update do arduino, confirmando sua atividade
-                $queryStatus = "SELECT * FROM arduino INNER JOIN salas ON ID_ARDUINO = FK_ARDUINO WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
+                $queryStatus = "SELECT * FROM arduino INNER JOIN sala ON ID_ARDUINO = FK_ARDUINO WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
                 $resultStatus = $conn->query($queryStatus);
                 $respStatus = $resultStatus->fetch_assoc();
                 if ($respStatus['NOME_SALA'] != "" || $respStatus['NOME_SALA'] != null) {
