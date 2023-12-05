@@ -117,7 +117,7 @@
                 $resultStatus = $conn->query($queryStatus);
                 $respStatus = $resultStatus->fetch_assoc();
                 if ($respStatus['NOME_SALA'] != "" || $respStatus['NOME_SALA'] != null) {
-                    $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE ID_ARDUINO = '". $respStatus['ID_ARDUINO'] ."';";
+                    $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE ID_ARDUINO = 'Ativo';";
                     $response = $respStatus['STATUS_ARDUINO'];
                 }
                 else {
