@@ -19,7 +19,7 @@
     
     if ($usuarioPermitido['ID_ARDUINO'] == "" || $usuarioPermitido['ID_ARDUINO'] == null) {
         header('HTTP/1.0 401 Unauthorized');
-        echo ("Arduino snão cadastrado. \n ID: ". $_GET['usuario']);
+        echo ("Arduino não cadastrado. \n ID: ". $_GET['usuario']);
         exit;
     }
     
