@@ -12,14 +12,14 @@
         exit;
     }
 
-    // arduinos cadastrados
+    // nomes de usuário permitidos
     $usuarios = 'SELECT * FROM arduino WHERE UNIQUE_ID = "'. $_GET['usuario'] .'";';
     $pegaUsuarios = $conn->query($usuarios);
     $usuarioPermitido = $pegaUsuarios->fetch_assoc();
-
-    if (!$usuarioPermitido.includes($_GET['usuario'])) {
+    
+    if ($usuarioPermitido['ID_ARDUINO'] == "" || $usuarioPermitido['ID_ARDUINO'] == null) {
         header('HTTP/1.0 401 Unauthorized');
-        echo ("Arduino não cadastrado. \n ID: ". $_GET['usuario']);
+        echo ("Arduino snão cadastrado. \n ID: ". $_GET['usuario']);
         exit;
     }
     
