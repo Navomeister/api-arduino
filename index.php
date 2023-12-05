@@ -116,9 +116,9 @@
                 $queryStatus = "SELECT * FROM arduino INNER JOIN sala ON ID_ARDUINO = FK_ARDUINO WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
                 $resultStatus = $conn->query($queryStatus);
                 $respStatus = $resultStatus->fetch_assoc();
-                if ($respStatus['NOME_SALA'] != "" || $respStatus['NOME_SALA'] != null) {
-                    $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE ID_ARDUINO = 'Ativo';";
-                    $response = $respStatus['STATUS_ARDUINO'];
+                if ($respStatus['NOME_SALA'] == "" || $respStatus['NOME_SALA'] == null) {
+                    $sql = "UPDATE arduino SET LAST_UPDATE = NOW(), STATUS_ARDUINO = 'Pendente' WHERE ID_ARDUINO = '". $respStatus['ID_ARDUINO'] ."';";
+                    $response = 'Pendente';
                 }
                 else {
                     $sql = "UPDATE arduino SET LAST_UPDATE = NOW(), STATUS_ARDUINO = 'Ativo' WHERE ID_ARDUINO = '". $respStatus['ID_ARDUINO'] ."';";
