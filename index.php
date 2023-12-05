@@ -17,7 +17,7 @@
     $pegaUsuarios = $conn->query($usuarios);
     $usuarioPermitido = $pegaUsuarios->fetch_assoc();
     
-    if ($usuarioPermitido['ID_ARDUINO'] == "" || $usuarioPermitido['ID_ARDUINO'] == null) {
+    if ($_GET['endpoint'] != 'cadastro' && ($usuarioPermitido['ID_ARDUINO'] == "" || $usuarioPermitido['ID_ARDUINO'] == null)) {
         header('HTTP/1.0 401 Unauthorized');
         echo ("Arduino não cadastrado. \n ID: ". $_GET['usuario']);
         exit;
