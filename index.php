@@ -12,13 +12,13 @@
         exit;
     }
 
-    // nomes de usuário permitidos
-    $usuarios = 'SELECT * FROM arduino WHERE UNIQUE_ID = "'. $_GET['usuario'] .'";';
-    $pegaUsuarios = $conn->query($usuarios);
-    $usuarioPermitido = $pegaUsuarios->fetch_assoc();
-
-    // se não for para cadastrar o arduino
+    
+    // se não for para cadastrar o arduino ou registrar atividade
     if ($_GET['endpoint'] != "cadastro" && $_GET['endpoint'] != "ativo") {
+        // nomes de usuário permitidos
+        $usuarios = 'SELECT * FROM arduino WHERE UNIQUE_ID = "'. $_GET['usuario'] .'";';
+        $pegaUsuarios = $conn->query($usuarios);
+        $usuarioPermitido = $pegaUsuarios->fetch_assoc();
         // verificar as credencias recebidas
         if ($usuarioPermitido['STATUS_ARDUINO'] != "Ativo" || !isset($usuarioPermitido['STATUS_ARDUINO'])) {
             // se as credenciais estiverem erradas, retorna erro
@@ -39,6 +39,7 @@
         $endpoint = $_GET['endpoint'];
         
         if ($method == 'GET') {
+            // endpoint de sala (resposta em áudio)
             if ($endpoint == 'salas') {                
                 // consulta ambas as tabelas juntas
                 $sql = 'SELECT * FROM sala INNER JOIN arduino ON FK_ARDUINO = ID_ARDUINO WHERE arduino.UNIQUE_ID = "'. $_GET['usuario'] .'";';
@@ -77,7 +78,7 @@
                 $conn->close();
             
             }
-            // endpoint cadastro
+            // endpoint cadastro (resposta em áudio)
             elseif ($endpoint == 'cadastro') {
                 // checa se já cadastro com aquele unique id
                 $sql = 'SELECT * FROM arduino WHERE UNIQUE_ID ="' . $_GET['usuario'] . '"';
@@ -108,20 +109,23 @@
                     $response = $responseCad;                    
                 }
             }
-            // endpoint de atividade
+            // endpoint de atividade (resposta em string)
             elseif ($endpoint == 'ativo') {
                 header('Content-Type: text/html; charset=UTF-8');
                 // atualiza o último update do arduino, confirmando sua atividade
-                $queryStatus = "SELECT * FROM arduino WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
+                $queryStatus = "SELECT * FROM arduino INNER JOIN salas ON ID_ARDUINO = FK_ARDUINO WHERE UNIQUE_ID = '". $_GET['usuario'] ."';";
                 $resultStatus = $conn->query($queryStatus);
                 $respStatus = $resultStatus->fetch_assoc();
-
-                $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE ID_ARDUINO = '". $respStatus['ID_ARDUINO'] ."';";
-                $result = $conn->query($sql);
-
-                // responde com string, mandando o status do arduino
-                $response = $respStatus['STATUS_ARDUINO'];
+                if ($respStatus['NOME_SALA'] != "" || $respStatus['NOME_SALA'] != null) {
+                    $sql = "UPDATE arduino SET LAST_UPDATE = NOW() WHERE ID_ARDUINO = '". $respStatus['ID_ARDUINO'] ."';";
+                    $response = $respStatus['STATUS_ARDUINO'];
+                }
+                else {
+                    $sql = "UPDATE arduino SET LAST_UPDATE = NOW(), STATUS_ARDUINO = 'Ativo' WHERE ID_ARDUINO = '". $respStatus['ID_ARDUINO'] ."';";
+                    $response = "Ativo";
+                }
                 
+                $result = $conn->query($sql);                
             }
         }
 
