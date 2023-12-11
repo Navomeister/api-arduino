@@ -171,11 +171,11 @@
                 "Ocp-Apim-Subscription-Key: ". $TTSKEY, // chave do serviço (menos seguro mas usaria de qualquer jeito pra pegar o token)
                 "Content-Type: application/ssml+xml", // tipo do body
                 "User-Agent: falamuitoeuespero", // nome do serviço
-                "X-Microsoft-OutputFormat: audio-16khz-128kbitrate-mono-mp3" // extensão da resposta (wav)
+                "X-Microsoft-OutputFormat: audio-16khz-128kbitrate-mono-mp3" // extensão da resposta (mp3)
             ],
             ]);
-            // audio-16khz-128kbitrate-mono-mp3
-            // riff-24khz-16bit-mono-pcm
+            // audio-16khz-128kbitrate-mono-mp3 // mp3
+            // riff-24khz-16bit-mono-pcm        // wav
 
             // pega a resposta ou erro da chamada
             $responseTTS = curl_exec($curl);
